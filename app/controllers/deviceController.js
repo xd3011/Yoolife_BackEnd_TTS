@@ -31,6 +31,41 @@ const getDevice = async (req, res) => {
     }
 };
 
+const queryPropertiesDevice = async (req, res) => {
+    try {
+        const { did } = req.params;
+        const { codes } = req.query;
+        const deviceProperties = await context.request({
+            path: `/v2.0/cloud/thing/${did}/shadow/properties?codes=${codes}`,
+            method: 'GET',
+        })
+        if (!deviceProperties.success) {
+            new Error();
+        }
+        return res.status(200).json(deviceProperties);
+    } catch (error) {
+        console.error("Error editing device:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+const deleteDevice = async (req, res) => {
+    try {
+        const { did } = req.params;
+        const device = await context.request({
+            path: `/v2.0/cloud/thing/${did}`,
+            method: 'DELETE',
+        })
+        if (!device.success) {
+            new Error();
+        }
+        return res.status(200).json(device);
+    } catch (error) {
+        console.error("Error editing device:", error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
 const controlDevice = async (req, res) => {
     try {
 
@@ -43,4 +78,6 @@ const controlDevice = async (req, res) => {
 module.exports = {
     getDevice,
     controlDevice,
+    deleteDevice,
+    queryPropertiesDevice,
 }
